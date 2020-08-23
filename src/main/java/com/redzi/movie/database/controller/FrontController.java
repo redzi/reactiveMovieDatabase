@@ -1,6 +1,8 @@
 package com.redzi.movie.database.controller;
 
+import com.redzi.movie.database.api.request.DetailedInfoRequest;
 import com.redzi.movie.database.api.request.InitialPaginatedInfoRequest;
+import com.redzi.movie.database.api.response.DetailedInfoResponse;
 import com.redzi.movie.database.api.response.InitialPaginatedInfoResponse;
 import com.redzi.movie.database.api.response.error.ApiError;
 import com.redzi.movie.database.controller.handler.FrontControllerErrorHandler;
@@ -25,12 +27,21 @@ public class FrontController
         this.errorHandler = errorHandler;
     }
 
-    @MessageMapping("rating")
-    public Mono<InitialPaginatedInfoResponse> getRating(Mono<InitialPaginatedInfoRequest> movieRequest)
+    @MessageMapping("general")
+    public Mono<InitialPaginatedInfoResponse> getGeneralPaginatedInfo(Mono<InitialPaginatedInfoRequest> infoRequest)
     {
-        return movieRequest
+        return infoRequest
                 .log(LOG_MESSAGE_IN)
-                .flatMap(ratingService::fetchRating)
+                .flatMap(ratingService::fetchGeneralPaginatedInfo)
+                .log(LOG_MESSAGE_OUT);
+    }
+
+    @MessageMapping("specific")
+    public Mono<DetailedInfoResponse> getSpecificInfo(Mono<DetailedInfoRequest> specificRequest)
+    {
+        return specificRequest
+                .log(LOG_MESSAGE_IN)
+                .flatMap(ratingService::fetchSpecifics)
                 .log(LOG_MESSAGE_OUT);
     }
 

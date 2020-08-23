@@ -1,6 +1,8 @@
 package com.redzi.movie.database.service;
 
+import com.redzi.movie.database.api.request.DetailedInfoRequest;
 import com.redzi.movie.database.api.request.InitialPaginatedInfoRequest;
+import com.redzi.movie.database.api.response.DetailedInfoResponse;
 import com.redzi.movie.database.api.response.InitialPaginatedInfoResponse;
 import com.redzi.movie.database.service.movie.search.OMDBSearchService;
 import com.redzi.movie.database.service.movie.search.mapper.InitialPaginatedInfoResponseMapper;
@@ -14,12 +16,18 @@ public class MovieRatingService
     @Autowired
     private OMDBSearchService omdbService;
     @Autowired
-    private InitialPaginatedInfoResponseMapper responseMapper;
+    private InitialPaginatedInfoResponseMapper initialPaginatedInfoResponseMapper;
 
-    public Mono<InitialPaginatedInfoResponse> fetchRating(InitialPaginatedInfoRequest initialPaginatedInfoRequest)
+    public Mono<InitialPaginatedInfoResponse> fetchGeneralPaginatedInfo(InitialPaginatedInfoRequest initialPaginatedInfoRequest)
     {
         return omdbService.searchPaginatedResults(initialPaginatedInfoRequest)
-                .map(responseMapper::map)
+                .map(value -> initialPaginatedInfoResponseMapper.map(value, initialPaginatedInfoRequest.getPage()))
+                .checkpoint(getClass().getSimpleName());
+    }
+
+    public Mono<DetailedInfoResponse> fetchSpecifics(DetailedInfoRequest detailedRequest)
+    {
+        return omdbService.fetchSpecifics(detailedRequest)
                 .checkpoint(getClass().getSimpleName());
     }
 }

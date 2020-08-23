@@ -1,6 +1,5 @@
 package com.redzi.movie.database.service.movie.search.connection;
 
-import com.redzi.movie.database.api.request.InitialPaginatedInfoRequest;
 import com.redzi.movie.database.service.configuration.MovieServiceConfiguration;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -10,32 +9,33 @@ import reactor.core.publisher.Mono;
 import java.net.URI;
 import java.util.function.Function;
 
-public abstract class MovieDataConnectionProvider<T>
+public abstract class MovieDataConnectionProvider<T,R>
 {
+    protected static final String OMDB_API_KEY = "apikey";
     protected final WebClient webClient;
     protected MovieServiceConfiguration movieServiceConfiguration;
-    protected Class<T> resClazz;
+    protected Class<R> resClazz;
 
     public MovieDataConnectionProvider(WebClient webClient,
                                        MovieServiceConfiguration movieServiceConfiguration,
-                                       Class<T> resClazz)
+                                       Class<R> resClazz)
     {
         this.webClient = webClient;
         this.movieServiceConfiguration = movieServiceConfiguration;
         this.resClazz = resClazz;
     }
 
-    public abstract Mono<T> search(InitialPaginatedInfoRequest initialPaginatedInfoRequest);
+    public abstract Mono<R> search(T request);
 
-    public Mono<T> get(InitialPaginatedInfoRequest initialPaginatedInfoRequest)
+    public Mono<R> get(T request)
     {
         return webClient.get()
-                .uri(buildURI(initialPaginatedInfoRequest))
+                .uri(buildURI(request))
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .bodyToMono(resClazz)
                 .log(this.getClass().getSimpleName());
     }
 
-    protected abstract Function<UriBuilder, URI> buildURI(InitialPaginatedInfoRequest initialPaginatedInfoRequest);
+    protected abstract Function<UriBuilder, URI> buildURI(T request);
 }

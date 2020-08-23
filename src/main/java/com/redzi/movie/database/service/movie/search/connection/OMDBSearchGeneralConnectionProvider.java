@@ -14,16 +14,18 @@ import java.util.function.Function;
 
 @Slf4j
 @Component
-public class OMDBSearchConnectionProvider extends MovieDataConnectionProvider<SearchPaginatedResponse>
+public class OMDBSearchGeneralConnectionProvider extends MovieDataConnectionProvider<InitialPaginatedInfoRequest, SearchPaginatedResponse>
 {
-    private static final String OMDB_API_KEY = "apikey";
-    public static final String SEARCH_PARAMETER = "s";
-    public static final String PAGE_PARAMETER = "page";
+    private static final String SEARCH_PARAMETER = "s";
+    private static final String PAGE_PARAMETER = "page";
+    private final EmptyResponseHandler<SearchPaginatedResponse> emptyResponseHandler;
 
-    public OMDBSearchConnectionProvider(WebClient webClient,
-                                        MovieServiceConfiguration movieServiceConfiguration)
+    public OMDBSearchGeneralConnectionProvider(WebClient webClient,
+                                               MovieServiceConfiguration movieServiceConfiguration,
+                                               EmptyResponseHandler<SearchPaginatedResponse> emptyResponseHandler)
     {
         super(webClient, movieServiceConfiguration, SearchPaginatedResponse.class);
+        this.emptyResponseHandler = emptyResponseHandler;
     }
 
     @Override
@@ -31,6 +33,7 @@ public class OMDBSearchConnectionProvider extends MovieDataConnectionProvider<Se
     {
         return get(initialPaginatedInfoRequest)
                 .log(this.getClass().getSimpleName())
+                .handle(emptyResponseHandler)
                 .checkpoint(this.getClass().getSimpleName() + " OMDB paginated response.");
     }
 

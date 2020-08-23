@@ -14,4 +14,5 @@ public class InitialPaginatedInfoResponse
 {
     private List<ShortInfo> infos;
     private long totalResultsNumber;
+    private long currentPageResultNumber;
 }

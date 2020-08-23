@@ -1,34 +1,27 @@
 package com.redzi.movie.database.redis;
 
 import com.redzi.movie.database.api.request.InitialPaginatedInfoRequest;
-import com.redzi.movie.database.service.movie.search.connection.OMDBSearchConnectionProvider;
-import com.redzi.movie.database.service.movie.search.data.SearchDetails;
+import com.redzi.movie.database.service.movie.search.connection.OMDBSearchGeneralConnectionProvider;
 import com.redzi.movie.database.service.movie.search.data.SearchPaginatedResponse;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
 @Component
-public class SearchPaginatedResponseRepository implements CachedRepository<SearchDetails>
+public class SearchPaginatedResponseRepository extends CachedRepository<InitialPaginatedInfoRequest, SearchPaginatedResponse>
 {
-    private final GetCachedOrLoad<SearchPaginatedResponse, Mono<SearchPaginatedResponse>> cachedOrLoad;
-    private final OMDBSearchConnectionProvider omdbSearchConnectionProvider;
+    private final OMDBSearchGeneralConnectionProvider omdbSearchGeneralConnectionProvider;
 
-    public SearchPaginatedResponseRepository(GetCachedOrLoad<SearchPaginatedResponse, Mono<SearchPaginatedResponse>> cachedOrLoad,
-                                             OMDBSearchConnectionProvider omdbSearchConnectionProvider)
+    public SearchPaginatedResponseRepository(GetCachedOrLoad<SearchPaginatedResponse> cachedOrLoad,
+                                             OMDBSearchGeneralConnectionProvider omdbSearchGeneralConnectionProvider)
     {
-        this.cachedOrLoad = cachedOrLoad;
-        this.omdbSearchConnectionProvider = omdbSearchConnectionProvider;
+        super(cachedOrLoad);
+        this.omdbSearchGeneralConnectionProvider = omdbSearchGeneralConnectionProvider;
     }
 
     @Override
-    public Mono<SearchPaginatedResponse> getFromCacheOrLive(InitialPaginatedInfoRequest initialPaginatedInfoRequest)
+    protected Mono<SearchPaginatedResponse> getRealData(InitialPaginatedInfoRequest initialPaginatedInfoRequest)
     {
-        return cachedOrLoad.getCachedOrLoad(initialPaginatedInfoRequest.getKey(), getRealData(initialPaginatedInfoRequest));
-    }
-
-    private Mono<SearchPaginatedResponse> getRealData(InitialPaginatedInfoRequest initialPaginatedInfoRequest)
-    {
-        return omdbSearchConnectionProvider.search(initialPaginatedInfoRequest)
+        return omdbSearchGeneralConnectionProvider.search(initialPaginatedInfoRequest)
                 .log("Got response from live service.");
     }
 }

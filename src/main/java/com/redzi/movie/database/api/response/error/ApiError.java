@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public class ApiError
 {
     private LocalDateTime timestamp;
-    private HttpStatus httpStatus;
+    private HttpStatus status;
     private ErrorCode errorCode;
     private String message;
 }

@@ -1,10 +1,20 @@
 package com.redzi.movie.database.redis;
 
-import com.redzi.movie.database.api.request.InitialPaginatedInfoRequest;
-import com.redzi.movie.database.service.movie.search.data.SearchPaginatedResponse;
 import reactor.core.publisher.Mono;
 
-public interface CachedRepository<T>
+public abstract class CachedRepository<T extends KeyContainer,R>
 {
-    Mono<SearchPaginatedResponse> getFromCacheOrLive(InitialPaginatedInfoRequest initialPaginatedInfoRequest);
+    protected final GetCachedOrLoad<R> cachedOrLoad;
+
+    public CachedRepository(GetCachedOrLoad<R> cachedOrLoad)
+    {
+        this.cachedOrLoad = cachedOrLoad;
+    }
+
+    public Mono<R> getFromCacheOrLive(T keyContainer)
+    {
+        return cachedOrLoad.getCachedOrLoad(keyContainer.getKey(), getRealData(keyContainer));
+    }
+
+    protected abstract Mono<? extends R> getRealData(T keyContainer);
 }
