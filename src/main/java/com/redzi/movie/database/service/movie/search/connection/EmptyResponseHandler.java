@@ -17,6 +17,9 @@ public class EmptyResponseHandler<T extends ResponseContainer> implements BiCons
         {
             sink.next(t);
         }
-        sink.error(new NoDataException());
+        else
+        {
+            sink.error(new NoDataException());
+        }
     }
 }
