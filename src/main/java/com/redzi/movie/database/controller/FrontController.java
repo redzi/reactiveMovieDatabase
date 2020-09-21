@@ -3,13 +3,14 @@ package com.redzi.movie.database.controller;
 import com.redzi.movie.database.api.request.DetailedInfoRequest;
 import com.redzi.movie.database.api.request.InitialPaginatedInfoRequest;
 import com.redzi.movie.database.api.response.DetailedInfoResponse;
-import com.redzi.movie.database.api.response.InitialPaginatedInfoResponse;
 import com.redzi.movie.database.api.response.error.ApiError;
 import com.redzi.movie.database.controller.handler.FrontControllerErrorHandler;
 import com.redzi.movie.database.service.MovieRatingService;
+import com.redzi.movie.database.api.response.SearchDetails;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Controller
@@ -28,11 +29,11 @@ public class FrontController
     }
 
     @MessageMapping("general")
-    public Mono<InitialPaginatedInfoResponse> getGeneralPaginatedInfo(Mono<InitialPaginatedInfoRequest> infoRequest)
+    public Flux<SearchDetails> getGeneralPaginatedInfo(Mono<InitialPaginatedInfoRequest> infoRequest)
     {
         return infoRequest
                 .log(LOG_MESSAGE_IN)
-                .flatMap(ratingService::fetchGeneralPaginatedInfo)
+                .flatMapMany(ratingService::fetchGeneralPaginatedInfo)
                 .log(LOG_MESSAGE_OUT);
     }
 

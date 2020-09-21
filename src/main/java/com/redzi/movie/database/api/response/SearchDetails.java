@@ -1,6 +1,7 @@
-package com.redzi.movie.database.service.movie.search.data;
+package com.redzi.movie.database.api.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.redzi.movie.database.service.movie.search.data.Type;
 import lombok.ToString;
 
 @ToString

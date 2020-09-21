@@ -1,6 +1,7 @@
 package com.redzi.movie.database.service.movie.search.data;
 
 import com.redzi.movie.database.api.response.ResponseContainer;
+import com.redzi.movie.database.api.response.SearchDetails;
 import lombok.Data;
 
 import java.util.List;
